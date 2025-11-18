@@ -1,3 +1,4 @@
+import math
 from scipy.stats import poisson
 
 from math import factorial
@@ -9,8 +10,8 @@ import pandas as pd
 student1_name = "Sinjini"
 student1_surname = "Pande"
 
-student2_name = ""
-student2_surname = ""
+student2_name = "Eliza"
+student2_surname = "Oborzynska"
 
 
 # A little reminder to fill in your personal information.
@@ -22,7 +23,7 @@ if (student1_name == "" or student1_surname == ""
     
 # Read data files
 data_Q1_Q3_Q4 = pd.read_csv("Data_Q1_Q3_Q4.csv", index_col=0)  
-data_Q2 = pd.read_csv("Data_Q2.csv", index_col=0)    
+# data_Q2 = pd.read_csv("Data_Q2.csv", index_col=0)    
 
 # %% Question 1
 
@@ -31,18 +32,37 @@ def Q1a_EBOitem(S,c_a,m,t):
     # c_a is the SKU's acquisition cost.
     # m is the number of failures per period.
     # t is the repair leadtime.
-        
-    mu = m * t
-    ans = 0.0
-    r = 0
-    cutoff = 1e-12   
+    
+    ans = 0
+    method1 = False
+    method2 = True
+    
+    if(method1):
+        mu = m * t
+        ans = 0.0
+        r = 0
+        cutoff = 1e-12   
 
-    while True:
-        tail_prob = poisson.sf(S + r, mu)
-        if tail_prob < cutoff:     
-            break
-        ans += tail_prob
-        r += 1
+        while True:
+            tail_prob = poisson.sf(S + r, mu)
+            if tail_prob < cutoff:     
+                break
+            ans += tail_prob
+            r += 1
+    
+    if(method2):  
+        probabilitiesX = []
+        probabilityX0 = math.exp(-1 * (m * t))
+        probabilitiesX.append(probabilityX0)
+        for k in range(1, S + 1):
+            calculate = ((m * t) / k) * probabilitiesX[k - 1]
+            probabilitiesX.append(calculate)
+            
+        const = (m * t) - S
+        sum = 0
+        for k in range(S + 1):
+            sum = sum + ((S - k) * probabilitiesX[k])
+        ans = const + sum
 
     return ans
 
