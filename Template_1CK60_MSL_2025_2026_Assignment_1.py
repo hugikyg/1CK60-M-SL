@@ -94,10 +94,24 @@ def Q1c_PBOitem(S,c_a,m,t):
     # t is the repair leadtime.
     
     ans = 0 
+    method1 = False
+    method2 = True
     
-    mu = m * t   # mean demand during lead time
-    ans = poisson.sf(S, mu) 
+    if(method1):
+        mu = m * t   # mean demand during lead time
+        ans = poisson.sf(S, mu) 
     
+    if(method2):  
+        probabilitiesX = []
+        probabilityX0 = math.exp(-1 * (m * t))
+        probabilitiesX.append(probabilityX0)
+        ans = ans + probabilityX0
+        for k in range(1, S + 1):
+            calculate = ((m * t) / k) * probabilitiesX[k - 1]
+            probabilitiesX.append(calculate)
+            ans = ans + calculate
+        ans = 1 - ans
+            
     # Your output should be a number.
 
     return ans
