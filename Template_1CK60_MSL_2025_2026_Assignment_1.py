@@ -83,7 +83,6 @@ def Q1b_EBO(S_list,c_a_list,m_list,t_list):
         )
         
     # Your output should be a number.
-    
         
     # Your output should be a number.
     return ans
@@ -216,7 +215,7 @@ m_list = list(data_Q1_Q3_Q4.iloc[0:15,4])
 t_list =list(data_Q1_Q3_Q4.iloc[0:15,5])
 
 
-
+print("Rounded")
 print("For question 1a:")
 print(f"{'SKU':<6}{'EBO_i (A)':>12}{'EBO_i (B)':>12}{'EBO_i (C)':>12}")
 print("-" * 42)
@@ -227,12 +226,30 @@ for i in range(len(S_A_list)):
     ebo_i_C = round(Q1a_EBOitem(S_C_list[i], c_a_list[i], m_list[i], t_list[i]),3)
     print(f"{i+1:<6}{ebo_i_A:>12}{ebo_i_B:>12}{ebo_i_C:>12}")
     
+    
 
+#Added this to check if the method Q1b_EBO works correctly. 
+#Rounded values of q1a were to much rounded to accuratly calcualte the sum.
+print("Rounded 6 decimals")
 
+print("For question 1a:")
+print(f"{'SKU':<6}{'EBO_i (A)':>12}{'EBO_i (B)':>12}{'EBO_i (C)':>12}")
+print("-" * 42)
+for i in range(len(S_A_list)):
+    ebo_i_A = round(Q1a_EBOitem(S_A_list[i], c_a_list[i], m_list[i], t_list[i]),6)
+    ebo_i_B = round(Q1a_EBOitem(S_B_list[i], c_a_list[i], m_list[i], t_list[i]),6)
+    ebo_i_C = round(Q1a_EBOitem(S_C_list[i], c_a_list[i], m_list[i], t_list[i]),6)
+    print(f"{i+1:<6}{ebo_i_A:>12}{ebo_i_B:>12}{ebo_i_C:>12}")
+#Summed the values that are in this table and they are the same as the values
+#calculated with the method Q1b_EBO
+    
+sumEBOa = Q1b_EBO(S_A_list, c_a_list, m_list, t_list)
+sumEBOb = Q1b_EBO(S_B_list, c_a_list, m_list, t_list)
+sumEBOc = Q1b_EBO(S_C_list, c_a_list, m_list, t_list)
                                                                                                                           
-print("For question 1b, the EBO for policy A is ....................")
-print("For question 1b, the EBO for policy B is ....................")
-print("For question 1b, the EBO for policy C is ....................")
+print("For question 1b, the EBO for policy A is ", sumEBOa)
+print("For question 1b, the EBO for policy B is ", sumEBOb)
+print("For question 1b, the EBO for policy C is ", sumEBOc)
 
 print("For question 1c:")
 print(f"{'SKU':<6}{'PBO_i (A)':>12}{'PBO_i (B)':>12}{'PBO_i (C)':>12}")
