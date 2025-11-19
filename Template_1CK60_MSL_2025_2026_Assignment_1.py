@@ -274,10 +274,14 @@ for i in range(len(S_A_list)):
     pbo_i_B = Q1c_PBOitem(S_B_list[i], c_a_list[i], m_list[i], t_list[i])
     pbo_i_C = Q1c_PBOitem(S_C_list[i], c_a_list[i], m_list[i], t_list[i])
     print(f"{i+1:<6}{pbo_i_A:>12.2f}{pbo_i_B:>12.2f}{pbo_i_C:>12.2f}")
+    
+sumPBOa = Q1d_PBO(S_A_list, c_a_list, m_list, t_list)
+sumPBOb = Q1d_PBO(S_B_list, c_a_list, m_list, t_list)
+sumPBOc = Q1d_PBO(S_C_list, c_a_list, m_list, t_list)
 
-print("For question 1d, the PBO for policy A is  ....................")
-print("For question 1d, the PBO for policy B is  ....................")
-print("For question 1d, the PBO for policy C is  ....................")
+print("For question 1d, the PBO for policy A is  ", sumPBOa)
+print("For question 1d, the PBO for policy B is  ", sumPBOb)
+print("For question 1d, the PBO for policy C is  ", sumPBOc)
 
 
 print("For question 1e, the total acquisition for policy A is   ....................")
