@@ -1,3 +1,4 @@
+import math
 from scipy.stats import poisson
 
 from math import factorial
@@ -9,8 +10,8 @@ import pandas as pd
 student1_name = "Sinjini"
 student1_surname = "Pande"
 
-student2_name = ""
-student2_surname = ""
+student2_name = "Eliza"
+student2_surname = "Oborzynska"
 
 
 # A little reminder to fill in your personal information.
@@ -22,7 +23,7 @@ if (student1_name == "" or student1_surname == ""
     
 # Read data files
 data_Q1_Q3_Q4 = pd.read_csv("Data_Q1_Q3_Q4.csv", index_col=0)  
-data_Q2 = pd.read_csv("Data_Q2.csv", index_col=0)    
+# data_Q2 = pd.read_csv("Data_Q2.csv", index_col=0)    
 
 # %% Question 1
 
@@ -31,18 +32,37 @@ def Q1a_EBOitem(S,c_a,m,t):
     # c_a is the SKU's acquisition cost.
     # m is the number of failures per period.
     # t is the repair leadtime.
-        
-    mu = m * t
-    ans = 0.0
-    r = 0
-    cutoff = 1e-12   
+    
+    ans = 0
+    method1 = False
+    method2 = True
+    
+    if(method1):
+        mu = m * t
+        ans = 0.0
+        r = 0
+        cutoff = 1e-12   
 
-    while True:
-        tail_prob = poisson.sf(S + r, mu)
-        if tail_prob < cutoff:     
-            break
-        ans += tail_prob
-        r += 1
+        while True:
+            tail_prob = poisson.sf(S + r, mu)
+            if tail_prob < cutoff:     
+                break
+            ans += tail_prob
+            r += 1
+    
+    if(method2):  
+        probabilitiesX = []
+        probabilityX0 = math.exp(-1 * (m * t))
+        probabilitiesX.append(probabilityX0)
+        for k in range(1, S + 1):
+            calculate = ((m * t) / k) * probabilitiesX[k - 1]
+            probabilitiesX.append(calculate)
+            
+        const = (m * t) - S
+        sum = 0
+        for k in range(S + 1):
+            sum = sum + ((S - k) * probabilitiesX[k])
+        ans = const + sum
 
     return ans
 
@@ -63,7 +83,6 @@ def Q1b_EBO(S_list,c_a_list,m_list,t_list):
         )
         
     # Your output should be a number.
-    
         
     # Your output should be a number.
     return ans
@@ -75,10 +94,24 @@ def Q1c_PBOitem(S,c_a,m,t):
     # t is the repair leadtime.
     
     ans = 0 
+    method1 = False
+    method2 = True
     
-    mu = m * t   # mean demand during lead time
-    ans = poisson.sf(S, mu) 
+    if(method1):
+        mu = m * t   # mean demand during lead time
+        ans = poisson.sf(S, mu) 
     
+    if(method2):  
+        probabilitiesX = []
+        probabilityX0 = math.exp(-1 * (m * t))
+        probabilitiesX.append(probabilityX0)
+        ans = ans + probabilityX0
+        for k in range(1, S + 1):
+            calculate = ((m * t) / k) * probabilitiesX[k - 1]
+            probabilitiesX.append(calculate)
+            ans = ans + calculate
+        ans = 1 - ans
+            
     # Your output should be a number.
 
     return ans
@@ -203,7 +236,7 @@ m_list = list(data_Q1_Q3_Q4.iloc[0:15,4])
 t_list =list(data_Q1_Q3_Q4.iloc[0:15,5])
 
 
-
+print("Rounded")
 print("For question 1a:")
 print(f"{'SKU':<6}{'EBO_i (A)':>12}{'EBO_i (B)':>12}{'EBO_i (C)':>12}")
 print("-" * 42)
@@ -214,12 +247,30 @@ for i in range(len(S_A_list)):
     ebo_i_C = round(Q1a_EBOitem(S_C_list[i], c_a_list[i], m_list[i], t_list[i]),3)
     print(f"{i+1:<6}{ebo_i_A:>12}{ebo_i_B:>12}{ebo_i_C:>12}")
     
+    
 
+#Added this to check if the method Q1b_EBO works correctly. 
+#Rounded values of q1a were to much rounded to accuratly calcualte the sum.
+print("Rounded 6 decimals")
 
+print("For question 1a:")
+print(f"{'SKU':<6}{'EBO_i (A)':>12}{'EBO_i (B)':>12}{'EBO_i (C)':>12}")
+print("-" * 42)
+for i in range(len(S_A_list)):
+    ebo_i_A = round(Q1a_EBOitem(S_A_list[i], c_a_list[i], m_list[i], t_list[i]),6)
+    ebo_i_B = round(Q1a_EBOitem(S_B_list[i], c_a_list[i], m_list[i], t_list[i]),6)
+    ebo_i_C = round(Q1a_EBOitem(S_C_list[i], c_a_list[i], m_list[i], t_list[i]),6)
+    print(f"{i+1:<6}{ebo_i_A:>12}{ebo_i_B:>12}{ebo_i_C:>12}")
+#Summed the values that are in this table and they are the same as the values
+#calculated with the method Q1b_EBO
+    
+sumEBOa = Q1b_EBO(S_A_list, c_a_list, m_list, t_list)
+sumEBOb = Q1b_EBO(S_B_list, c_a_list, m_list, t_list)
+sumEBOc = Q1b_EBO(S_C_list, c_a_list, m_list, t_list)
                                                                                                                           
-print("For question 1b, the EBO for policy A is ....................")
-print("For question 1b, the EBO for policy B is ....................")
-print("For question 1b, the EBO for policy C is ....................")
+print("For question 1b, the EBO for policy A is ", sumEBOa)
+print("For question 1b, the EBO for policy B is ", sumEBOb)
+print("For question 1b, the EBO for policy C is ", sumEBOc)
 
 print("For question 1c:")
 print(f"{'SKU':<6}{'PBO_i (A)':>12}{'PBO_i (B)':>12}{'PBO_i (C)':>12}")
@@ -230,10 +281,14 @@ for i in range(len(S_A_list)):
     pbo_i_B = Q1c_PBOitem(S_B_list[i], c_a_list[i], m_list[i], t_list[i])
     pbo_i_C = Q1c_PBOitem(S_C_list[i], c_a_list[i], m_list[i], t_list[i])
     print(f"{i+1:<6}{pbo_i_A:>12.2f}{pbo_i_B:>12.2f}{pbo_i_C:>12.2f}")
+    
+sumPBOa = Q1d_PBO(S_A_list, c_a_list, m_list, t_list)
+sumPBOb = Q1d_PBO(S_B_list, c_a_list, m_list, t_list)
+sumPBOc = Q1d_PBO(S_C_list, c_a_list, m_list, t_list)
 
-print("For question 1d, the PBO for policy A is  ....................")
-print("For question 1d, the PBO for policy B is  ....................")
-print("For question 1d, the PBO for policy C is  ....................")
+print("For question 1d, the PBO for policy A is  ", sumPBOa)
+print("For question 1d, the PBO for policy B is  ", sumPBOb)
+print("For question 1d, the PBO for policy C is  ", sumPBOc)
 
 
 print("For question 1e, the total acquisition for policy A is   ....................")
