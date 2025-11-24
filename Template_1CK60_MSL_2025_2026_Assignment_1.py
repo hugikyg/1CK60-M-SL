@@ -112,8 +112,9 @@ def Q1e_Costs(S_list,c_a_list,m_list,t_list):
 
     ans = 0
 
-    # YOUR CODE GOES HERE.
-        
+    for i in range(len(S_list)):
+        ans += c_a_list[i] * S_list[i]
+
     # Your output should be a number.
     
     
@@ -128,7 +129,13 @@ def Q1f_FRitem(S, c_a, m, t):
     
     ans = 0
 
-    # YOUR CODE GOES HERE.
+    mu = m * t
+    
+    if mu == 0:
+        return 1.0
+
+    ebo_i = Q1a_EBOitem(S, c_a, m, t)
+    ans = (1.0 - (ebo_i / mu))
         
     # Your output should be a number.
     
