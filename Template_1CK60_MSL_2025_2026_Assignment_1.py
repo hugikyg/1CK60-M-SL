@@ -34,35 +34,18 @@ def Q1a_EBOitem(S,c_a,m,t):
     # t is the repair leadtime.
     
     ans = 0
-    method1 = False
-    method2 = True
     
-    if(method1):
-        mu = m * t
-        ans = 0.0
-        r = 0
-        cutoff = 1e-12   
+    mu = m * t
+    ans = 0.0
+    r = 0
+    cutoff = 1e-12   
 
-        while True:
-            tail_prob = poisson.sf(S + r, mu)
-            if tail_prob < cutoff:     
-                break
-            ans += tail_prob
-            r += 1
-    
-    if(method2):  
-        probabilitiesX = []
-        probabilityX0 = math.exp(-1 * (m * t))
-        probabilitiesX.append(probabilityX0)
-        for k in range(1, S + 1):
-            calculate = ((m * t) / k) * probabilitiesX[k - 1]
-            probabilitiesX.append(calculate)
-            
-        const = (m * t) - S
-        sum = 0
-        for k in range(S + 1):
-            sum = sum + ((S - k) * probabilitiesX[k])
-        ans = const + sum
+    while True:
+        tail_prob = poisson.sf(S + r, mu)
+        if tail_prob < cutoff:     
+            break
+        ans += tail_prob
+        r += 1
 
     return ans
 
@@ -94,24 +77,10 @@ def Q1c_PBOitem(S,c_a,m,t):
     # t is the repair leadtime.
     
     ans = 0 
-    method1 = False
-    method2 = True
     
-    if(method1):
-        mu = m * t   # mean demand during lead time
-        ans = poisson.sf(S, mu) 
-    
-    if(method2):  
-        probabilitiesX = []
-        probabilityX0 = math.exp(-1 * (m * t))
-        probabilitiesX.append(probabilityX0)
-        ans = ans + probabilityX0
-        for k in range(1, S + 1):
-            calculate = ((m * t) / k) * probabilitiesX[k - 1]
-            probabilitiesX.append(calculate)
-            ans = ans + calculate
-        ans = 1 - ans
-            
+    mu = m * t   # mean demand during lead time
+    ans = poisson.sf(S, mu) 
+  
     # Your output should be a number.
 
     return ans
@@ -263,23 +232,6 @@ for i in range(len(S_A_list)):
     ebo_i_B = round(Q1a_EBOitem(S_B_list[i], c_a_list[i], m_list[i], t_list[i]),3)
     ebo_i_C = round(Q1a_EBOitem(S_C_list[i], c_a_list[i], m_list[i], t_list[i]),3)
     print(f"{i+1:<6}{ebo_i_A:>12}{ebo_i_B:>12}{ebo_i_C:>12}")
-    
-    
-
-#Added this to check if the method Q1b_EBO works correctly. 
-#Rounded values of q1a were to much rounded to accuratly calcualte the sum.
-print("Rounded 6 decimals")
-
-print("For question 1a:")
-print(f"{'SKU':<6}{'EBO_i (A)':>12}{'EBO_i (B)':>12}{'EBO_i (C)':>12}")
-print("-" * 42)
-for i in range(len(S_A_list)):
-    ebo_i_A = round(Q1a_EBOitem(S_A_list[i], c_a_list[i], m_list[i], t_list[i]),6)
-    ebo_i_B = round(Q1a_EBOitem(S_B_list[i], c_a_list[i], m_list[i], t_list[i]),6)
-    ebo_i_C = round(Q1a_EBOitem(S_C_list[i], c_a_list[i], m_list[i], t_list[i]),6)
-    print(f"{i+1:<6}{ebo_i_A:>12}{ebo_i_B:>12}{ebo_i_C:>12}")
-#Summed the values that are in this table and they are the same as the values
-#calculated with the method Q1b_EBO
     
 sumEBOa = Q1b_EBO(S_A_list, c_a_list, m_list, t_list)
 sumEBOb = Q1b_EBO(S_B_list, c_a_list, m_list, t_list)
