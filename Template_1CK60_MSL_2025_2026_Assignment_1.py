@@ -689,58 +689,29 @@ def Q4c_WT_Shipping(S_list, c_h_list, c_s_list, m_list, t_list, t_s_list):
     # Your output should be a number.
     return ans
 
-
-
 def Q4d_GreedyWT_Shipping(c_h_list, c_s_list, m_list, t_list, t_s_list, target_wt):
-    # c_h_list[i] is the holding cost of SKU i.
-    # c_s_list[i] is the additional cost for shipping SKU i.
-    # m_list[i] is the number of failures per period of SKU i.
-    # t_list[i] is the repair leadtime of SKU i.
-    # t_s_list[i] is the shipping lead time of SKU i.
-    # target_wt is the waiting time objective.
+    
+    n = len(c_h_list)
+    S_output = [0] * n
 
+    W_old = [Q1h_WTitem(S_output[i], c_h_list[i], m_list[i], t_s_list[i]) for i in range(n)]
+    currWT = Q1i_WT(S_output, c_h_list, m_list, t_s_list)
 
-    S_output=[0]*len(c_h_list)
+    while Q1i_WT(S_output, c_h_list, m_list, t_s_list) > target_wt:
+        W_new = [0.0] * n
+        gamma = [0.0] * n
 
-    S_output = [0] * len(c_h_list)
-    W_old = [0] * len(c_h_list)
-    W_new = [0] * len(c_h_list)
-    gamma = [0] * len(c_h_list)
+        for i in range(n):
+            W_new[i] = Q1h_WTitem(S_output[i] + 1, c_h_list[i], m_list[i], t_s_list[i])
 
-    # Combine repair and shipping lead times
-    t_total = [t_list[i] + t_s_list[i] for i in range(len(t_list))]
-
-    # Combine costs
-    c_total = [c_h_list[i] + c_s_list[i] for i in range(len(c_h_list))]
-
-    # Compute initial W_i
-    for i in range(len(c_h_list)):
-        W_old[i] = Q1h_WTitem(S_output[i], c_total[i], m_list[i], t_total[i])
-
-    # Compute current aggregate WT
-    currentWT = Q1i_WT(S_output, c_total, m_list, t_total)
-    print("Current WT = ", currentWT)
-
-    increaseIndex = 0
-
-    while Q1i_WT(S_output, c_total, m_list, t_total) > target_wt:
-        for i in range(len(c_h_list)):
-            W_new[i] = Q1h_WTitem(S_output[i] + 1, c_total[i], m_list[i], t_total[i])
-            gamma[i] = (-1 * (W_new[i] - W_old[i])) / c_total[i]
-
-        for i in range(len(c_h_list) - 1):
-            if gamma[increaseIndex] < gamma[i + 1]:
-                increaseIndex = i + 1
+            gamma[i] = (-1.0 * (W_new[i] - W_old[i])) / c_h_list[i]
+        increaseIndex = max(range(n), key=lambda j: gamma[j])
 
         S_output[increaseIndex] += 1
-        W_old[increaseIndex] = Q1h_WTitem(S_output[increaseIndex], c_total[increaseIndex],
-                                            m_list[increaseIndex], t_total[increaseIndex])
-        increaseIndex = 0
 
-    # Output a list of stock levels.
+        W_old[increaseIndex] = Q1h_WTitem(S_output[increaseIndex], c_h_list[increaseIndex], m_list[increaseIndex], t_s_list[increaseIndex])
+
     return S_output
-
-
 
 
 print("\n           ==== SOLUTION QUESTION 4 ====          \n")
